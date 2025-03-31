@@ -1,0 +1,152 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #EAF5E3;
+    color: #2E4C2F;
+    padding: 10px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+header {
+    background: linear-gradient(to right, #4CAF50, #2E8B57);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background: #3E6B48;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 12px 20px;
+    margin: 0 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    background: #2E4C2F;
+}
+
+main {
+    margin: 20px 0;
+}
+
+section {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+h2 {
+    font-size: 26px;
+    color: #2E4C2F;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+p {
+    font-size: 20px;
+    line-height: 1.6;
+    color: #2E4C2F;
+}
+
+p strong {
+    color: #1C3920;
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+#info {
+    margin-top: 15px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.disclaimer {
+    font-size: 14px;
+    color: #2E4C2F;
+    opacity: 0.6;
+    margin-top: 10px;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    background: #3E6B48;
+    color: white;
+    font-size: 18px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.leaflet-popup-content {
+    font-size: 16px !important;
+    font-weight: bold;
+    color: #2E4C2F;
+    padding: 5px;
+}
+
+.leaflet-popup-content-wrapper {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-popup-tip {
+    background: white;
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav a {
+        margin: 5px 0;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    p {
+        font-size: 18px;
+    }
+}
