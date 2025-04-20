@@ -1,9 +1,19 @@
 const token = '2701d75dedf0221c9c00d132963e523aa8d1061d';
 const locationIQToken = 'pk.5ab5cc1654c32f44a88470d21764fc02';
 const mapboxToken = 'sk.eyJ1Ijoib3Zlcm93bCIsImEiOiJjbTd5dXNydm4wYm5iMmlyNnQzM29zODhyIn0.a0-LkE_EuopN6DFKM9UCyA';
-const map = L.map('map').setView([59.437, 24.753], 6);
+const map = L.map('map', {
+    minZoom: 2,
+    maxZoom: 18,
+    worldCopyJump: false, // не перепрыгивать между копиями мира
+    maxBounds: [
+        [-85, -180],
+        [85, 180]
+    ],
+    maxBoundsViscosity: 1.0 // твёрдая граница
+}).setView([20, 0], 2); // показать весь мир
 
-L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}&language=et`, {
+
+L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}&language=en`, {
     attribution: '&copy; Mapbox',
     tileSize: 512,
     zoomOffset: -1
