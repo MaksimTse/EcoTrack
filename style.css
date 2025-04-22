@@ -199,6 +199,12 @@ footer {
         text-align: center;
     }
 
+    .switchers {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+    }
+
     nav a {
         margin: 5px 0;
     }

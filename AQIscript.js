@@ -4,13 +4,13 @@ const mapboxToken = 'sk.eyJ1Ijoib3Zlcm93bCIsImEiOiJjbTd5dXNydm4wYm5iMmlyNnQzM29z
 const map = L.map('map', {
     minZoom: 2,
     maxZoom: 18,
-    worldCopyJump: false, // не перепрыгивать между копиями мира
+    worldCopyJump: false,
     maxBounds: [
         [-85, -180],
         [85, 180]
     ],
-    maxBoundsViscosity: 1.0 // твёрдая граница
-}).setView([20, 0], 2); // показать весь мир
+    maxBoundsViscosity: 1.0
+}).setView([20, 0], 2);
 
 
 L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}&language=en`, {
