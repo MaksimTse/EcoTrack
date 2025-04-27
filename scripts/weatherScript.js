@@ -5,6 +5,7 @@ const translations = {
         nav_aqi: "Õhukvaliteet",
         nav_weather: "Ilm",
         nav_about: "Info",
+        nav_logout: "Logi Välja",
         weather_section_title: "🌦️ Ilmaandmed",
         weather_what: "Mis see on?",
         weather_what_desc: "Kaardipõhine ilmarakendus, mis näitab reaalajas temperatuuri ja tuuleinfot valitud punktist.",
@@ -32,6 +33,7 @@ const translations = {
         nav_aqi: "Air Quality",
         nav_weather: "Weather",
         nav_about: "About",
+        nav_logout: "Logout",
         weather_section_title: "🌦️ Weather Data",
         weather_what: "What is it?",
         weather_what_desc: "A map-based weather app showing real-time temperature and wind info at a selected location.",
@@ -90,7 +92,7 @@ window.onload = () => {
     function setLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('lang', lang);
-        langBtn.textContent = lang === 'et' ? 'English' : 'Eesti';
+        langBtn.textContent = lang === 'et' ? 'EN' : 'EE';
         translatePage(lang);
         document.title = translations[lang].title;
     }

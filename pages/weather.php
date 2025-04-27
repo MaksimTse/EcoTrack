@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../pages/index.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="et">
 <head>
@@ -5,14 +13,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title data-i18n="title">Ilmakaart - Keskkonnaandmed</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../styles/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body data-theme="light">
 <div class="container">
     <header data-i18n="header">Keskkonnaandmete Portaal</header>
     <nav>
-        <a href="./index.php" data-i18n="nav_aqi">Õhukvaliteet</a>
+        <a href="./airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
         <a href="./weather.php" class="active" data-i18n="nav_weather">Ilm</a>
         <a href="./about.php" data-i18n="nav_about">Info</a>
         <div class="switchers">
@@ -45,7 +53,7 @@
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="weatherScript.js"></script>
+<script src="../scripts/weatherScript.js"></script>
 
 </body>
 </html>

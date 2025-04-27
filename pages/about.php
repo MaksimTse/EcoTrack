@@ -1,16 +1,24 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../pages/index.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="et">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title data-i18n="title">Keskkonnaandmed - API Rakendus</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../styles/style.css" />
 </head>
 <body data-theme="light">
 <div class="container">
     <header data-i18n="header">Projekti Info</header>
     <nav>
-        <a href="./index.php" data-i18n="nav_aqi">Õhukvaliteet</a>
+        <a href="./airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
         <a href="./weather.php" data-i18n="nav_weather">Ilm</a>
         <a href="./about.php" class="active" data-i18n="nav_about">Info</a>
         <div class="switchers">
@@ -42,6 +50,7 @@
             nav_aqi: "Õhukvaliteet",
             nav_weather: "Ilm",
             nav_about: "Info",
+            nav_logout: "Logi Välja",
             about_title: "📌 Projekti Info",
             about_what: "Mis on Keskkonnaandmete Portaal?",
             about_what_desc: "See on kaasaegne veebirakendus...",
@@ -56,6 +65,7 @@
             nav_aqi: "Air Quality",
             nav_weather: "Weather",
             nav_about: "About",
+            nav_logout: "Logout",
             about_title: "📌 Project Info",
             about_what: "What is the Environmental Data Portal?",
             about_what_desc: "This is a modern web application...",
@@ -96,7 +106,7 @@
 
         function setLanguage(lang) {
             localStorage.setItem('lang', lang);
-            langBtn.textContent = lang === 'et' ? 'English' : 'Eesti';
+            langBtn.textContent = lang === 'et' ? 'EN' : 'EE';
             translatePage(lang);
             document.title = translations[lang].title;
         }
