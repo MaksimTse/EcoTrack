@@ -17,12 +17,15 @@ if (!isset($_SESSION['user_id'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body data-theme="light">
+<div id="notification" class="notification"></div>
 <div class="container">
     <header data-i18n="header">Keskkonnaandmete Portaal</header>
     <nav>
-        <a href="./airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
-        <a href="./weather.php" class="active" data-i18n="nav_weather">Ilm</a>
-        <a href="./about.php" data-i18n="nav_about">Info</a>
+        <a href="../pages/airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
+        <a href="../pages/weather.php" class="active" data-i18n="nav_weather">Ilm</a>
+        <a href="../pages/about.php" data-i18n="nav_about">Info</a>
+        <a href="../pages/favorites.php" class="active" data-i18n="nav_favorites">Lemmikud</a>
+        <a href="../api/logout.php" data-i18n="nav_logout">Logi välja</a>
         <div class="switchers">
             <button id="theme-toggle">🌙</button>
             <button id="lang-toggle">🇬🇧</button>

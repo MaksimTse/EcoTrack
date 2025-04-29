@@ -26,11 +26,11 @@ const translations = {
         nav_logout: "Logi Välja",
         section_title: "🌍 Õhukvaliteet",
         what_is: "Mis see on?",
-        what_is_desc: "Õhukvaliteedi indeks (AQI) näitab, kui puhas või saastunud on õhk. Mida madalam on AQI, seda parem on õhu kvaliteet.",
+        what_is_desc: "Õhukvaliteedi indeks (AQI) näitab, kui puhas või saastunud on õhk.",
         how_work: "Kuidas see töötab?",
         how_work_desc: "Valige asukoht kaardil, et näha andmeid.",
         info_text: "👉 Valige koht kaardil, et näha andmeid.",
-        disclaimer: "⚠️ NB! Kaardil kuvatavad andmed võivad olla ebatäpsed... Kui konkreetse asukoha andmed puuduvad, kuvatakse lähima mõõtepunkti teave.",
+        disclaimer: "⚠️ NB! Kaardil kuvatavad andmed võivad olla ebatäpsed...",
         footer: "&copy; 2025 Keskkonnaandmete Rakendus. Kõik õigused kaitstud.",
         loading_data: "⏳ Laen andmeid...",
         error_loading: "⚠️ Andmete laadimine ebaõnnestus.",
@@ -40,7 +40,15 @@ const translations = {
         air_quality_unhealthy_sensitive: "Ebatervislik tundlikule rühmale",
         air_quality_unhealthy: "Ebatervislik",
         air_quality_very_unhealthy: "Väga ebatervislik",
-        air_quality_hazardous: "Ohtlik"
+        air_quality_hazardous: "Ohtlik",
+        location: "Asukoht",
+        aqi: "AQI",
+        main_pollutant: "Peamine saasteaine",
+        last_updated: "Viimati uuendatud",
+        aqi_rank: "AQI maailma järjestus",
+        cleaner_places: "Puhasõhu piirkonnad AQI järgi",
+        dirtier_places: "Saastunumad piirkonnad AQI järgi",
+        selected_point: "Valitud punkt"
     },
     en: {
         header: "Environmental Data Portal",
@@ -50,11 +58,11 @@ const translations = {
         nav_logout: "Logout",
         section_title: "🌍 Air Quality",
         what_is: "What is it?",
-        what_is_desc: "The Air Quality Index (AQI) indicates how clean or polluted the air is. The lower the AQI, the better the air quality.",
+        what_is_desc: "The Air Quality Index (AQI) indicates how clean or polluted the air is.",
         how_work: "How does it work?",
         how_work_desc: "Click a point on the map to see data.",
         info_text: "👉 Click on the map to see data.",
-        disclaimer: "⚠️ Note! The data shown on the map may be inaccurate... If no data is available for the selected location, the nearest station's data is shown.",
+        disclaimer: "⚠️ Note! The data shown on the map may be inaccurate...",
         footer: "&copy; 2025 Environmental Data Application. All rights reserved.",
         loading_data: "⏳ Loading data...",
         error_loading: "⚠️ Failed to load data.",
@@ -64,7 +72,15 @@ const translations = {
         air_quality_unhealthy_sensitive: "Unhealthy for Sensitive Groups",
         air_quality_unhealthy: "Unhealthy",
         air_quality_very_unhealthy: "Very Unhealthy",
-        air_quality_hazardous: "Hazardous"
+        air_quality_hazardous: "Hazardous",
+        location: "Location",
+        aqi: "AQI",
+        main_pollutant: "Main pollutant",
+        last_updated: "Last updated",
+        aqi_rank: "AQI world rank",
+        cleaner_places: "Cleaner places by AQI",
+        dirtier_places: "More polluted places by AQI",
+        selected_point: "Selected point"
     }
 };
 
@@ -101,7 +117,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Карта и AQI-логика
 const map = L.map('map', {
     minZoom: 2,
     maxZoom: 18,
@@ -119,7 +134,7 @@ L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{
 let currentMarker = null;
 
 const customIcon = L.icon({
-    iconUrl: './assets/gps.png',
+    iconUrl: '../assets/gps.png',
     iconSize: [38, 38],
     iconAnchor: [19, 38],
     popupAnchor: [0, -35]
@@ -138,9 +153,7 @@ async function getAllStations() {
     return data.data.filter(s => s.aqi !== '-' && !isNaN(s.aqi));
 }
 
-map.on('click', async function (e) {
-    const lat = e.latlng.lat;
-    const lon = e.latlng.lng;
+async function getAQIData(lat, lon) {
     const infoBox = document.getElementById('info');
     infoBox.innerHTML = t('loading_data');
 
@@ -183,16 +196,24 @@ map.on('click', async function (e) {
                 </div>
             `;
 
+            const addButton = document.createElement('button');
+            addButton.className = 'favorite-button';
+            addButton.style.cssText = 'margin-top:10px; padding:8px 15px; font-size:16px; background:var(--accent-color); color:white; border:none; border-radius:8px; cursor:pointer;';
+            addButton.textContent = (localStorage.getItem('lang') || 'et') === 'et' ? '⭐ Lisa lemmikutesse' : '⭐ Add to favorites';
+            addButton.onclick = () => addToFavorites('AQI', location, lat, lon);
+
             infoBox.innerHTML = `
-                <strong>📍 Location:</strong> ${location} (${country})<br>
-                <strong>🌫️ AQI:</strong> ${aqi} (${quality})<br>
-                <strong>💨 Main pollutant:</strong> ${dominant}<br>
-                <strong>📅 Last updated:</strong> ${updated}<br><br>
-                <strong>📊 AQI world rank:</strong> ${rank}/${sortedByAQI.length}<br><br>
-                <strong>⬇️ 5 cleaner places by AQI:</strong>${listHTML(cleaner)}<br>
-                <strong>🎯 Selected point:</strong>${location} (${country}) – AQI ${aqi}<br><br>
-                <strong>⬆️ 5 more polluted places by AQI:</strong>${listHTML(dirtier)}
+                <strong>📍 ${t('location')}:</strong> ${location} (${country})<br>
+                <strong>🌫️ ${t('aqi')}:</strong> ${aqi} (${quality})<br>
+                <strong>💨 ${t('main_pollutant')}:</strong> ${dominant}<br>
+                <strong>📅 ${t('last_updated')}:</strong> ${updated}<br><br>
+                <strong>📊 ${t('aqi_rank')}:</strong> ${rank}/${sortedByAQI.length}<br><br>
+                <strong>⬇️ ${t('cleaner_places')}:</strong>${listHTML(cleaner)}<br><br>
+                <strong>🎯 ${t('selected_point')}:</strong> ${location} (${country}) – AQI ${aqi}<br><br>
+                <strong>⬆️ ${t('dirtier_places')}:</strong>${listHTML(dirtier)}<br><br>
             `;
+
+            infoBox.appendChild(addButton);
 
             currentMarker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
             currentMarker.bindPopup(popupContent).openPopup();
@@ -203,4 +224,39 @@ map.on('click', async function (e) {
         console.error(error);
         infoBox.innerHTML = t('error_fetch');
     }
+}
+
+map.on('click', async function (e) {
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
+    await getAQIData(lat, lon);
 });
+
+const params = new URLSearchParams(window.location.search);
+const latParam = parseFloat(params.get('lat'));
+const lonParam = parseFloat(params.get('lon'));
+if (!isNaN(latParam) && !isNaN(lonParam)) {
+    map.setView([latParam, lonParam], 20);
+    getAQIData(latParam, lonParam);
+}
+
+async function addToFavorites(source, location, lat, lon) {
+    try {
+        const response = await fetch('../api/add_favorite.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ source, location, lat, lon })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+        } else {
+            alert(result.error);
+        }
+    } catch (error) {
+        console.error(error);
+        alert('⚠️ Server error!');
+    }
+}

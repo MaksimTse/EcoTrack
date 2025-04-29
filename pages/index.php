@@ -37,6 +37,7 @@
             <button type="submit" id="register-submit">Registreeru</button>
         </form>
     </div>
+    <div id="message-box" class="message-box"></div>
 </div>
 
 <script src="../scripts/auth.js"></script>

@@ -32,6 +32,17 @@ function getLang() {
     return localStorage.getItem('lang') || 'et';
 }
 
+function showMessage(message, type = 'success') {
+    const box = document.getElementById('message-box');
+    box.textContent = message;
+    box.className = `message-box ${type}`;
+    box.style.display = 'block';
+
+    setTimeout(() => {
+        box.style.display = 'none';
+    }, 4000);
+}
+
 function translateForms() {
     const lang = getLang();
     document.getElementById('login-email').placeholder = translations[lang].emailPlaceholder;
@@ -100,11 +111,12 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
     const data = await response.json();
     if (response.ok) {
-        localStorage.setItem('username', data.username);
-        alert(data.message);
-        window.location.href = '../pages/airquality.php';
+        showMessage(data.message, 'success');
+        setTimeout(() => {
+            window.location.href = '../pages/airquality.php';
+        }, 1000);
     } else {
-        alert(data.error);
+        showMessage(data.error, 'error');
     }
 });
 
@@ -123,8 +135,8 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
 
     const data = await response.json();
     if (response.ok) {
-        alert(data.message);
+        showMessage(data.message, 'success');
     } else {
-        alert(data.error);
+        showMessage(data.error, 'error');
     }
 });

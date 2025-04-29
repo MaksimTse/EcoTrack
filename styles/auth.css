@@ -118,6 +118,30 @@ body {
     height: 320px;
 }
 
+.message-box {
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+.message-box.success {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+    border: 1px solid #66bb6a;
+}
+
+.message-box.error {
+    background-color: #ffcdd2;
+    color: #c62828;
+    border: 1px solid #e57373;
+}
+
+
 form {
     position: absolute;
     top: 0;

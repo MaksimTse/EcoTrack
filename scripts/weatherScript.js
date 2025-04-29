@@ -81,7 +81,12 @@ window.onload = () => {
     langBtn.addEventListener('click', () => {
         const newLang = currentLang === 'et' ? 'en' : 'et';
         setLanguage(newLang);
+
+        document.querySelectorAll('.favorite-button').forEach(btn => {
+            btn.textContent = newLang === 'et' ? '⭐ Lisa lemmikutesse' : '⭐ Add to favorites';
+        });
     });
+
 
     function setTheme(mode) {
         document.body.dataset.theme = mode;
@@ -135,7 +140,7 @@ window.onload = () => {
     let currentMarker = null;
 
     const customIcon = L.icon({
-        iconUrl: './assets/gps.png',
+        iconUrl: '../assets/gps.png',
         iconSize: [38, 38],
         iconAnchor: [19, 38],
         popupAnchor: [0, -35]
@@ -147,6 +152,15 @@ window.onload = () => {
         currentMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
         validateAndUpdate();
     });
+
+    const params = new URLSearchParams(window.location.search);
+    const latParam = parseFloat(params.get('lat'));
+    const lonParam = parseFloat(params.get('lon'));
+    if (!isNaN(latParam) && !isNaN(lonParam)) {
+        currentMarker = L.marker([latParam, lonParam], { icon: customIcon }).addTo(map);
+        map.setView([latParam, lonParam], 20);
+        validateAndUpdate();
+    }
 
     function validateAndUpdate() {
         if (!currentMarker) return;
@@ -194,6 +208,48 @@ window.onload = () => {
                 <p><strong>${translations[currentLang].weather_current}</strong> ${condition}</p>
                 <canvas id="historyChart" height="150"></canvas>
             `;
+
+            const favoriteButton = document.createElement('button');
+            favoriteButton.textContent = currentLang === 'et' ? '⭐ Lisa lemmikutesse' : '⭐ Add to favorites';
+            favoriteButton.className = 'favorite-button';
+            favoriteButton.style.marginTop = '15px';
+            favoriteButton.style.padding = '10px 20px';
+            favoriteButton.style.backgroundColor = 'var(--accent-color)';
+            favoriteButton.style.color = 'white';
+            favoriteButton.style.border = 'none';
+            favoriteButton.style.borderRadius = '10px';
+            favoriteButton.style.fontWeight = 'bold';
+            favoriteButton.style.cursor = 'pointer';
+            favoriteButton.style.fontSize = '16px';
+            favoriteButton.style.transition = 'background-color var(--transition)';
+
+            favoriteButton.addEventListener('click', async () => {
+                try {
+                    const response = await fetch('../api/add_favorite.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            source: 'Weather',
+                            location: `${locationInfo.city}, ${locationInfo.country}`,
+                            lat: lat,
+                            lon: lon
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        alert(data.message);
+                    } else {
+                        alert(data.error);
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert(currentLang === 'et' ? 'Viga lemmiku lisamisel.' : 'Error adding to favorites.');
+                }
+            });
+
+            weatherInfo.appendChild(favoriteButton);
 
             drawChart(dates, avgTemps, precs, winds);
         } catch (err) {

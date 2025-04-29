@@ -1,0 +1,123 @@
+:root {
+    --bg-body: #EAF5E3;
+    --text-color: #2E4C2F;
+    --accent-color: #3E6B48;
+    --card-bg: white;
+    --box-shadow: rgba(0, 0, 0, 0.1);
+    --popup-bg: white;
+    --strong-text: #1C3920;
+    --transition: 0.3s ease-in-out;
+}
+
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --text-color: #e0e0e0;
+    --accent-color: #1f4037;
+    --card-bg: #1e1e1e;
+    --box-shadow: rgba(255, 255, 255, 0.05);
+    --popup-bg: #2a2a2a;
+    --strong-text: #bbf7d0;
+}
+
+.favorite-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color var(--transition);
+}
+
+.favorite-button:hover {
+    background-color: var(--strong-text);
+}
+
+.favorite-item {
+    background-color: var(--card-bg, #1c1c1e);
+    border: 1px solid var(--accent-color, #333);
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+    color: var(--text-color, #fff);
+    transition: transform 0.2s ease;
+}
+
+
+
+.favorite-item:hover {
+    transform: scale(1.02);
+}
+
+.favorite-item strong {
+    color: #42f57b;
+    font-size: 1.1em;
+}
+
+.favorite-item p {
+    margin: 8px 0;
+}
+
+.favorite-item .btn-link {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: #fff !important;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-right: 10px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.favorite-item .btn-link:hover {
+    background-color: #0056b3;
+}
+
+.favorite-item .remove-fav {
+    padding: 6px 12px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.favorite-item .remove-fav:hover {
+    background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .switchers {
+        display: flex;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    nav a {
+        margin: 5px 0;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    p {
+        font-size: 18px;
+    }
+}
