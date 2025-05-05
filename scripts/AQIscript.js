@@ -203,6 +203,7 @@ async function getAQIData(lat, lon) {
             addButton.onclick = () => addToFavorites('AQI', location, lat, lon);
 
             infoBox.innerHTML = `
+                <div id="favorite-button-box" style="margin-bottom: 16px;"></div>
                 <strong>📍 ${t('location')}:</strong> ${location} (${country})<br>
                 <strong>🌫️ ${t('aqi')}:</strong> ${aqi} (${quality})<br>
                 <strong>💨 ${t('main_pollutant')}:</strong> ${dominant}<br>
@@ -213,7 +214,8 @@ async function getAQIData(lat, lon) {
                 <strong>⬆️ ${t('dirtier_places')}:</strong>${listHTML(dirtier)}<br><br>
             `;
 
-            infoBox.appendChild(addButton);
+
+            document.getElementById('favorite-button-box')?.appendChild(addButton);
 
             currentMarker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
             currentMarker.bindPopup(popupContent).openPopup();
@@ -236,7 +238,7 @@ const params = new URLSearchParams(window.location.search);
 const latParam = parseFloat(params.get('lat'));
 const lonParam = parseFloat(params.get('lon'));
 if (!isNaN(latParam) && !isNaN(lonParam)) {
-    map.setView([latParam, lonParam], 20);
+    map.setView([latParam, lonParam], 4);
     getAQIData(latParam, lonParam);
 }
 

@@ -13,8 +13,10 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title data-i18n="title">Keskkonnaandmed - API Rakendus</title>
     <link rel="stylesheet" href="../styles/style.css" />
+    <link rel="icon" type="image/png" href="../assets/EcoTrackLogo.png">
+    <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
 </head>
-<body data-theme="light">
+<body>
 <div class="container">
     <header data-i18n="header">Projekti Info</header>
     <nav>

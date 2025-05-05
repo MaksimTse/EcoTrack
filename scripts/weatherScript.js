@@ -158,7 +158,7 @@ window.onload = () => {
     const lonParam = parseFloat(params.get('lon'));
     if (!isNaN(latParam) && !isNaN(lonParam)) {
         currentMarker = L.marker([latParam, lonParam], { icon: customIcon }).addTo(map);
-        map.setView([latParam, lonParam], 20);
+        map.setView([latParam, lonParam], 4);
         validateAndUpdate();
     }
 
@@ -200,7 +200,8 @@ window.onload = () => {
             const condition = emojiWeather(currentWeatherData.weather[0].description);
 
             weatherInfo.innerHTML = `
-                <h3>📍 ${translations[currentLang].weather_coords} ${lat.toFixed(2)}, ${lon.toFixed(2)}</h3>
+                <div id="favorite-button-box" style="margin-bottom: 16px;"></div>
+                <p><strong>${translations[currentLang].weather_coords}</strong> 📍 ${lat.toFixed(2)}, ${lon.toFixed(2)}</p>
                 <p><strong>${translations[currentLang].weather_location}</strong> ${locationInfo.city}, ${locationInfo.region}, ${locationInfo.country}
                 ${locationInfo.flagUrl ? `<img src="${locationInfo.flagUrl}" alt="flag" style="vertical-align: middle; margin-left: 8px;">` : ''}</p>
                 <p><strong>${translations[currentLang].weather_range}</strong> ${start} → ${end}</p>
@@ -249,7 +250,7 @@ window.onload = () => {
                 }
             });
 
-            weatherInfo.appendChild(favoriteButton);
+            document.getElementById('favorite-button-box')?.appendChild(favoriteButton);
 
             drawChart(dates, avgTemps, precs, winds);
         } catch (err) {

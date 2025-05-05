@@ -84,7 +84,7 @@ langToggle.addEventListener('click', () => {
     const newLang = currentLang === 'et' ? 'en' : 'et';
     localStorage.setItem('lang', newLang);
     translateForms();
-    langToggle.textContent = newLang === 'et' ? 'EN' : 'ET';
+    langToggle.textContent = newLang === 'et' ? 'en' : 'et';
 });
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -94,7 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     translateForms();
     const lang = getLang();
-    langToggle.textContent = lang === 'et' ? 'EN' : 'ET';
+    langToggle.textContent = lang === 'et' ? 'en' : 'et';
 });
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {

@@ -15,8 +15,10 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="../styles/style.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/EcoTrackLogo.png">
+    <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
 </head>
-<body data-theme="light">
+<body>
 <div id="notification" class="notification"></div>
 <div class="container">
     <header data-i18n="header">Keskkonnaandmete Portaal</header>
