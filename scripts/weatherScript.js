@@ -6,6 +6,7 @@ const translations = {
         nav_weather: "Ilm",
         nav_about: "Info",
         nav_logout: "Logi Välja",
+        nav_favorites: "Lemmikud",
         weather_section_title: "🌦️ Ilmaandmed",
         weather_what: "Mis see on?",
         weather_what_desc: "Kaardipõhine ilmarakendus, mis näitab reaalajas temperatuuri ja tuuleinfot valitud punktist.",
@@ -34,6 +35,7 @@ const translations = {
         nav_weather: "Weather",
         nav_about: "About",
         nav_logout: "Logout",
+        nav_favorites: "Favorites",
         weather_section_title: "🌦️ Weather Data",
         weather_what: "What is it?",
         weather_what_desc: "A map-based weather app showing real-time temperature and wind info at a selected location.",
@@ -87,6 +89,21 @@ window.onload = () => {
         });
     });
 
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.backgroundColor = isError ? '#dc3545' : 'var(--accent-color)';
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
 
     function setTheme(mode) {
         document.body.dataset.theme = mode;
@@ -176,6 +193,11 @@ window.onload = () => {
         const { lat, lng } = currentMarker.getLatLng();
         getWeather(lat, lng);
     }
+    function formatLocation(...parts) {
+        return parts
+            .filter(part => part && part.trim() !== '—')
+            .join(', ');
+    }
 
     async function getWeather(lat, lon) {
         const start = startInput.value;
@@ -200,29 +222,31 @@ window.onload = () => {
             const condition = emojiWeather(currentWeatherData.weather[0].description);
 
             weatherInfo.innerHTML = `
-                <div id="favorite-button-box" style="margin-bottom: 16px;"></div>
-                <p><strong>${translations[currentLang].weather_coords}</strong> 📍 ${lat.toFixed(2)}, ${lon.toFixed(2)}</p>
-                <p><strong>${translations[currentLang].weather_location}</strong> ${locationInfo.city}, ${locationInfo.region}, ${locationInfo.country}
-                ${locationInfo.flagUrl ? `<img src="${locationInfo.flagUrl}" alt="flag" style="vertical-align: middle; margin-left: 8px;">` : ''}</p>
-                <p><strong>${translations[currentLang].weather_range}</strong> ${start} → ${end}</p>
-                <p><a href="${locationInfo.osmUrl}" target="_blank" style="color:#007bff; text-decoration:underline;">${translations[currentLang].weather_openmap}</a></p>
-                <p><strong>${translations[currentLang].weather_current}</strong> ${condition}</p>
-                <canvas id="historyChart" height="150"></canvas>
-            `;
+            <div id="favorite-button-box" style="margin-bottom: 16px;"></div>
+            <p><strong>${translations[currentLang].weather_coords}</strong> 📍 ${lat.toFixed(2)}, ${lon.toFixed(2)}</p>
+            <p><strong>${translations[currentLang].weather_location}</strong> ${formatLocation(locationInfo.city, locationInfo.region, locationInfo.country)}
+            ${locationInfo.flagUrl ? `<img src="${locationInfo.flagUrl}" alt="flag" style="vertical-align: middle; margin-left: 8px;">` : ''}</p>
+            <p><strong>${translations[currentLang].weather_range}</strong> ${start} → ${end}</p>
+            <p><a href="${locationInfo.osmUrl}" target="_blank" style="color:#007bff; text-decoration:underline;">${translations[currentLang].weather_openmap}</a></p>
+            <p><strong>${translations[currentLang].weather_current}</strong> ${condition}</p>
+            <canvas id="historyChart" height="150"></canvas>
+        `;
 
             const favoriteButton = document.createElement('button');
             favoriteButton.textContent = currentLang === 'et' ? '⭐ Lisa lemmikutesse' : '⭐ Add to favorites';
             favoriteButton.className = 'favorite-button';
-            favoriteButton.style.marginTop = '15px';
-            favoriteButton.style.padding = '10px 20px';
-            favoriteButton.style.backgroundColor = 'var(--accent-color)';
-            favoriteButton.style.color = 'white';
-            favoriteButton.style.border = 'none';
-            favoriteButton.style.borderRadius = '10px';
-            favoriteButton.style.fontWeight = 'bold';
-            favoriteButton.style.cursor = 'pointer';
-            favoriteButton.style.fontSize = '16px';
-            favoriteButton.style.transition = 'background-color var(--transition)';
+            favoriteButton.style.cssText = `
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color var(--transition);
+        `;
 
             favoriteButton.addEventListener('click', async () => {
                 try {
@@ -232,31 +256,27 @@ window.onload = () => {
                         credentials: 'include',
                         body: JSON.stringify({
                             source: 'Weather',
-                            location: `${locationInfo.city}, ${locationInfo.country}`,
+                            location: formatLocation(locationInfo.city, locationInfo.region, locationInfo.country),
                             lat: lat,
                             lon: lon
                         })
                     });
 
                     const data = await response.json();
-                    if (response.ok) {
-                        alert(data.message);
-                    } else {
-                        alert(data.error);
-                    }
+                    showToast(response.ok ? data.message : data.error, !response.ok);
                 } catch (error) {
                     console.error(error);
-                    alert(currentLang === 'et' ? 'Viga lemmiku lisamisel.' : 'Error adding to favorites.');
+                    showToast(currentLang === 'et' ? 'Viga lemmiku lisamisel.' : 'Error adding to favorites.', true);
                 }
             });
 
             document.getElementById('favorite-button-box')?.appendChild(favoriteButton);
-
             drawChart(dates, avgTemps, precs, winds);
         } catch (err) {
             weatherInfo.innerHTML = `<p style="color:red;">${translations[currentLang].error_loading}</p>`;
         }
     }
+
 
     async function getLocationInfo(lat, lon) {
         const url = `https://eu1.locationiq.com/v1/reverse?key=${locationIQToken}&lat=${lat}&lon=${lon}&format=json`;

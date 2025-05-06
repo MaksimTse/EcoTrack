@@ -24,6 +24,7 @@ const translations = {
         nav_weather: "Ilm",
         nav_about: "Info",
         nav_logout: "Logi Välja",
+        nav_favorites: "Lemmikud",
         section_title: "🌍 Õhukvaliteet",
         what_is: "Mis see on?",
         what_is_desc: "Õhukvaliteedi indeks (AQI) näitab, kui puhas või saastunud on õhk.",
@@ -56,6 +57,7 @@ const translations = {
         nav_weather: "Weather",
         nav_about: "About",
         nav_logout: "Logout",
+        nav_favorites: "Favorites",
         section_title: "🌍 Air Quality",
         what_is: "What is it?",
         what_is_desc: "The Air Quality Index (AQI) indicates how clean or polluted the air is.",
@@ -153,13 +155,33 @@ async function getAllStations() {
     return data.data.filter(s => s.aqi !== '-' && !isNaN(s.aqi));
 }
 
+function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.backgroundColor = isError ? '#dc3545' : 'var(--accent-color)';
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 100);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function formatLocation(...parts) {
+    return parts
+        .filter(part => part && part.trim() !== '—')
+        .join(', ');
+}
+
 async function getAQIData(lat, lon) {
     const infoBox = document.getElementById('info');
     infoBox.innerHTML = t('loading_data');
 
-    if (currentMarker) {
-        map.removeLayer(currentMarker);
-    }
+    if (currentMarker) map.removeLayer(currentMarker);
 
     try {
         const locationRes = await fetch(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`);
@@ -167,10 +189,12 @@ async function getAQIData(lat, lon) {
 
         if (locationData.status === 'ok') {
             const aqi = parseInt(locationData.data.aqi);
-            const location = locationData.data.city?.name || 'Unknown location';
+            const rawLocation = locationData.data.city?.name || '';
             const dominant = locationData.data.dominentpol || 'No info';
             const updated = locationData.data.time?.s || 'Unknown time';
             const country = await getCountryName(lat, lon);
+
+            const locationFormatted = formatLocation(rawLocation, country);
 
             let quality = '';
             if (aqi <= 50) quality = t('air_quality_very_good');
@@ -182,7 +206,6 @@ async function getAQIData(lat, lon) {
 
             const stations = await getAllStations();
             const sortedByAQI = stations.slice().sort((a, b) => parseInt(a.aqi) - parseInt(b.aqi));
-
             const cleaner = sortedByAQI.filter(s => parseInt(s.aqi) < aqi).slice(-5).reverse();
             const dirtier = sortedByAQI.filter(s => parseInt(s.aqi) > aqi).slice(0, 5);
             const rank = sortedByAQI.findIndex(s => parseInt(s.aqi) === aqi) + 1;
@@ -191,7 +214,7 @@ async function getAQIData(lat, lon) {
 
             const popupContent = `
                 <div style="text-align: center; font-size: 16px;">
-                    <b>📍 ${location}</b><br>
+                    <b>📍 ${locationFormatted}</b><br>
                     🌫️ AQI: <span style="color: ${aqi > 100 ? 'red' : 'green'}; font-weight: bold;">${aqi}</span>
                 </div>
             `;
@@ -200,20 +223,19 @@ async function getAQIData(lat, lon) {
             addButton.className = 'favorite-button';
             addButton.style.cssText = 'margin-top:10px; padding:8px 15px; font-size:16px; background:var(--accent-color); color:white; border:none; border-radius:8px; cursor:pointer;';
             addButton.textContent = (localStorage.getItem('lang') || 'et') === 'et' ? '⭐ Lisa lemmikutesse' : '⭐ Add to favorites';
-            addButton.onclick = () => addToFavorites('AQI', location, lat, lon);
+            addButton.onclick = () => addToFavorites('AQI', locationFormatted, lat, lon);
 
             infoBox.innerHTML = `
                 <div id="favorite-button-box" style="margin-bottom: 16px;"></div>
-                <strong>📍 ${t('location')}:</strong> ${location} (${country})<br>
+                <strong>📍 ${t('location')}:</strong> ${locationFormatted}<br>
                 <strong>🌫️ ${t('aqi')}:</strong> ${aqi} (${quality})<br>
                 <strong>💨 ${t('main_pollutant')}:</strong> ${dominant}<br>
                 <strong>📅 ${t('last_updated')}:</strong> ${updated}<br><br>
                 <strong>📊 ${t('aqi_rank')}:</strong> ${rank}/${sortedByAQI.length}<br><br>
                 <strong>⬇️ ${t('cleaner_places')}:</strong>${listHTML(cleaner)}<br><br>
-                <strong>🎯 ${t('selected_point')}:</strong> ${location} (${country}) – AQI ${aqi}<br><br>
+                <strong>🎯 ${t('selected_point')}:</strong> ${locationFormatted} – AQI ${aqi}<br><br>
                 <strong>⬆️ ${t('dirtier_places')}:</strong>${listHTML(dirtier)}<br><br>
             `;
-
 
             document.getElementById('favorite-button-box')?.appendChild(addButton);
 
@@ -227,6 +249,7 @@ async function getAQIData(lat, lon) {
         infoBox.innerHTML = t('error_fetch');
     }
 }
+
 
 map.on('click', async function (e) {
     const lat = e.latlng.lat;
@@ -251,14 +274,14 @@ async function addToFavorites(source, location, lat, lon) {
             body: JSON.stringify({ source, location, lat, lon })
         });
 
-        const result = await response.json();
+        const data = await response.json();
         if (response.ok) {
-            alert(result.message);
+            showToast(data.message); // ✅
         } else {
-            alert(result.error);
+            showToast(data.error, true); // ❌
         }
     } catch (error) {
         console.error(error);
-        alert('⚠️ Server error!');
+        showToast(currentLang === 'et' ? 'Viga lemmiku lisamisel.' : 'Error adding to favorites.', true);
     }
 }

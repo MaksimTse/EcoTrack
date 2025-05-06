@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
             open_on_map: "Ava kaardil",
             remove: "Eemalda",
             footer: "&copy; 2025 Keskkonnaandmete Rakendus. Kõik õigused kaitstud.",
-
         },
         en: {
             header: "Environmental Data Portal",
@@ -73,54 +72,93 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => div.remove(), 400);
     }
 
-    function loadFavorites() {
-        fetch('../api/get_favorites.php', { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                aqiList.innerHTML = '';
-                weatherList.innerHTML = '';
+    function cleanText(str) {
+        return str.replace(/—|-/g, '').replace(/,+/g, '').trim();
+    }
 
-                if (data.length === 0) {
-                    const msg = `<p>${t('no_favorites')}</p>`;
-                    aqiList.innerHTML = msg;
-                    weatherList.innerHTML = msg;
-                    return;
+    async function fetchWeather(lat, lon) {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=dd522ea0963543444d79b6d78ddc80b9&units=metric&lang=${currentLang}`);
+        const data = await res.json();
+        const emoji = desc => {
+            const d = desc.toLowerCase();
+            if (d.includes("clear")) return "☀️";
+            if (d.includes("cloud")) return "⛅";
+            if (d.includes("rain")) return "🌧️";
+            if (d.includes("snow")) return "❄️";
+            if (d.includes("storm") || d.includes("thunder")) return "⛈️";
+            if (d.includes("mist") || d.includes("fog")) return "🌫️";
+            return "🌡️";
+        };
+        return `${emoji(data.weather[0].description)} ${Math.round(data.main.temp)}°C`;
+    }
+
+    async function fetchAQI(lat, lon) {
+        const token = '2701d75dedf0221c9c00d132963e523aa8d1061d';
+        const res = await fetch(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=${token}`);
+        const data = await res.json();
+        return data.status === 'ok' ? `${data.data.aqi} AQI (${data.data.dominentpol})` : "—";
+    }
+
+    async function loadFavorites() {
+        try {
+            const res = await fetch('../api/get_favorites.php', { credentials: 'include' });
+            const data = await res.json();
+
+            aqiList.innerHTML = '';
+            weatherList.innerHTML = '';
+
+            if (data.length === 0) {
+                const msg = `<p>${t('no_favorites')}</p>`;
+                aqiList.innerHTML = msg;
+                weatherList.innerHTML = msg;
+                return;
+            }
+
+            for (const fav of data) {
+                const div = document.createElement('div');
+                div.className = 'favorite-item';
+                const cleanedLocation = cleanText(fav.location);
+                const url = `${fav.source === 'AQI' ? 'airquality.php' : 'weather.php'}?lat=${fav.lat}&lon=${fav.lon}`;
+                let additional = '';
+
+                if (fav.source === 'Weather') {
+                    additional = await fetchWeather(fav.lat, fav.lon);
+                } else {
+                    additional = await fetchAQI(fav.lat, fav.lon);
                 }
 
-                data.forEach(fav => {
-                    const div = document.createElement('div');
-                    div.className = 'favorite-item';
-                    const url = `${fav.source === 'AQI' ? 'airquality.php' : 'weather.php'}?lat=${fav.lat}&lon=${fav.lon}`;
-                    div.innerHTML = `
-                        <p><strong>${fav.location}</strong><br>
-                        ${t('coordinates')}: ${fav.lat.toFixed(2)}, ${fav.lon.toFixed(2)}</p>
+                div.innerHTML = `
+                    <p><strong>${cleanedLocation}</strong></p>
+                    <p>${t('coordinates')}: ${fav.lat.toFixed(2)}, ${fav.lon.toFixed(2)}</p>
+                    <p>${fav.source === 'Weather' ? ' ' + additional : '🌫️ ' + additional}</p>
+                    <div style="margin-top:8px;">
                         <a href="${url}" class="btn-link">${t('open_on_map')}</a>
                         <button class="remove-fav">${t('remove')}</button>
-                    `;
+                    </div>
+                `;
 
-                    div.querySelector('.remove-fav').addEventListener('click', () => {
-                        fetch(`../api/remove_favorite.php?id=${fav.id}`, {
-                            method: 'DELETE',
-                            credentials: 'include'
-                        }).then(r => {
-                            if (r.ok) {
-                                animateRemove(div);
-                                setTimeout(() => {
-                                    if (!aqiList.hasChildNodes())
-                                        aqiList.innerHTML = `<p>${t('no_favorites')}</p>`;
-                                    if (!weatherList.hasChildNodes())
-                                        weatherList.innerHTML = `<p>${t('no_favorites')}</p>`;
-                                }, 500);
-                            }
-                        });
+                div.querySelector('.remove-fav').addEventListener('click', () => {
+                    fetch(`../api/remove_favorite.php?id=${fav.id}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    }).then(r => {
+                        if (r.ok) {
+                            animateRemove(div);
+                            setTimeout(() => {
+                                if (!aqiList.hasChildNodes())
+                                    aqiList.innerHTML = `<p>${t('no_favorites')}</p>`;
+                                if (!weatherList.hasChildNodes())
+                                    weatherList.innerHTML = `<p>${t('no_favorites')}</p>`;
+                            }, 500);
+                        }
                     });
-
-                    (fav.source === 'AQI' ? aqiList : weatherList).appendChild(div);
                 });
-            })
-            .catch(err => {
-                console.error("Error loading favorites:", err);
-            });
+
+                (fav.source === 'AQI' ? aqiList : weatherList).appendChild(div);
+            }
+        } catch (err) {
+            console.error("Error loading favorites:", err);
+        }
     }
 
     const systemPref = window.matchMedia('(prefers-color-scheme: dark)').matches;

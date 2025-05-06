@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
 </head>
 <body>
-
+<div id="toast-container"></div>
 <div class="auth-container">
     <h1>EcoTrack</h1>
 

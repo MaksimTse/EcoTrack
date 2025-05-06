@@ -84,7 +84,7 @@ langToggle.addEventListener('click', () => {
     const newLang = currentLang === 'et' ? 'en' : 'et';
     localStorage.setItem('lang', newLang);
     translateForms();
-    langToggle.textContent = newLang === 'et' ? 'en' : 'et';
+    langToggle.textContent = newLang === 'et' ? 'EN' : 'EE';
 });
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -94,7 +94,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     translateForms();
     const lang = getLang();
-    langToggle.textContent = lang === 'et' ? 'en' : 'et';
+    langToggle.textContent = lang === 'et' ? 'EN' : 'EE';
 });
 
 document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -126,17 +126,44 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     const email = document.getElementById('register-email').value;
     const password = document.getElementById('register-password').value;
 
-    const response = await fetch('../api/register.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ username, email, password })
-    });
+    try {
+        const registerResponse = await fetch('../api/register.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, email, password })
+        });
 
-    const data = await response.json();
-    if (response.ok) {
-        showMessage(data.message, 'success');
-    } else {
-        showMessage(data.error, 'error');
+        const registerData = await registerResponse.json();
+
+        if (registerResponse.ok) {
+            showMessage(registerData.message, 'success');
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const loginResponse = await fetch('../api/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password })
+            });
+
+            const loginData = await loginResponse.json();
+            if (loginResponse.ok) {
+                showMessage(loginData.message, 'success');
+                setTimeout(() => {
+                    window.location.href = '../pages/airquality.php';
+                }, 1000);
+            } else {
+                showMessage(loginData.error || 'Login failed', 'error');
+            }
+
+        } else {
+            showMessage(registerData.error, 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showMessage('❌ Server error!', 'error');
     }
 });
+
