@@ -55,7 +55,7 @@ const translations = {
         header: "Environmental Data Portal",
         nav_aqi: "Air Quality",
         nav_weather: "Weather",
-        nav_about: "About",
+        nav_about: "Info",
         nav_logout: "Logout",
         nav_favorites: "Favorites",
         section_title: "🌍 Air Quality",

@@ -18,18 +18,29 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
 <div class="container">
-    <header data-i18n="header">Projekti Info</header>
-    <nav>
+    <header data-i18n="header">Keskkonnaandmete Portaal</header>
+    <div class="burger-toggle" id="burger-toggle">☰</div>
+
+    <nav class="desktop-nav" id="desktop-nav">
         <a href="../pages/airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
         <a href="../pages/weather.php" data-i18n="nav_weather">Ilm</a>
         <a href="../pages/about.php" class="active" data-i18n="nav_about">Info</a>
         <a href="../pages/favorites.php" data-i18n="nav_favorites">Lemmikud</a>
         <a href="../api/logout.php" data-i18n="nav_logout">Logi välja</a>
-        <div class="switchers">
-            <button id="theme-toggle">🌙</button>
-            <button id="lang-toggle">🇬🇧</button>
-        </div>
+
     </nav>
+
+    <nav class="mobile-nav" id="mobile-nav">
+        <a href="../pages/airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
+        <a href="../pages/weather.php" data-i18n="nav_weather">Ilm</a>
+        <a href="../pages/about.php" class="active" data-i18n="nav_about">Info</a>
+        <a href="../pages/favorites.php" data-i18n="nav_favorites">Lemmikud</a>
+        <a href="../api/logout.php" data-i18n="nav_logout">Logi välja</a>
+    </nav>
+    <div class="switchers">
+        <button id="theme-toggle">🌙</button>
+        <button id="lang-toggle">🇬🇧</button>
+    </div>
 
     <main>
         <section id="about">
@@ -47,5 +58,6 @@ if (!isset($_SESSION['user_id'])) {
 </div>
 
 <script src="../scripts/aboutScript.js"></script>
+<script src="../scripts/navScript.js"></script>
 </body>
 </html>

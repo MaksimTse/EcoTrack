@@ -22,17 +22,29 @@ if (!isset($_SESSION['user_id'])) {
 <div id="notification" class="notification"></div>
 <div class="container">
     <header data-i18n="header">Keskkonnaandmete Portaal</header>
-    <nav>
+    <div class="burger-toggle" id="burger-toggle">☰</div>
+
+    <nav class="desktop-nav" id="desktop-nav">
         <a href="../pages/airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
         <a href="../pages/weather.php" class="active" data-i18n="nav_weather">Ilm</a>
         <a href="../pages/about.php" data-i18n="nav_about">Info</a>
-        <a href="../pages/favorites.php" class="active" data-i18n="nav_favorites">Lemmikud</a>
+        <a href="../pages/favorites.php" data-i18n="nav_favorites">Lemmikud</a>
         <a href="../api/logout.php" data-i18n="nav_logout">Logi välja</a>
-        <div class="switchers">
-            <button id="theme-toggle">🌙</button>
-            <button id="lang-toggle">🇬🇧</button>
-        </div>
+
     </nav>
+
+    <nav class="mobile-nav" id="mobile-nav">
+        <a href="../pages/airquality.php" data-i18n="nav_aqi">Õhukvaliteet</a>
+        <a href="../pages/weather.php" class="active" data-i18n="nav_weather">Ilm</a>
+        <a href="../pages/about.php" data-i18n="nav_about">Info</a>
+        <a href="../pages/favorites.php" data-i18n="nav_favorites">Lemmikud</a>
+        <a href="../api/logout.php" data-i18n="nav_logout">Logi välja</a>
+    </nav>
+    <div class="switchers">
+        <button id="theme-toggle">🌙</button>
+        <button id="lang-toggle">🇬🇧</button>
+    </div>
+
     <main>
         <section id="weather">
             <h2 data-i18n="weather_section_title">🌦️ Ilmaandmed</h2>
@@ -59,6 +71,6 @@ if (!isset($_SESSION['user_id'])) {
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="../scripts/weatherScript.js"></script>
-
+<script src="../scripts/navScript.js"></script>
 </body>
 </html>

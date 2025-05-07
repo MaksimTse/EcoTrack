@@ -16,7 +16,7 @@
     --card-bg: #1e1e1e;
     --box-shadow: rgba(255, 255, 255, 0.05);
     --popup-bg: #2a2a2a;
-    --strong-text: #bbf7d0;
+    --strong-text: #97efb4;
 }
 
 body {
@@ -176,6 +176,10 @@ footer {
     padding: 5px;
 }
 
+.active{
+    background: var(--strong-text);
+}
+
 .leaflet-popup-content-wrapper {
     background: var(--popup-bg);
     border-radius: 16px;
@@ -229,6 +233,7 @@ footer {
 .switchers {
     display: flex;
     justify-content: center;
+    text-align: center;
     gap: 12px;
     margin-top: 10px;
 }
@@ -281,5 +286,69 @@ footer {
 
     p {
         font-size: 18px;
+    }
+}
+
+.burger-toggle {
+    display: none;
+    font-size: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: white;
+    background: var(--accent-color);
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px var(--box-shadow);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    background: var(--accent-color);
+    border-radius: 10px;
+    padding: 0;
+    margin-bottom: 20px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.9s ease, opacity 0.9s ease;
+}
+
+.mobile-nav.show {
+    padding: 15px;
+    max-height: 500px;
+    opacity: 1;
+}
+
+.desktop-nav {
+    display: flex;
+}
+.burger-toggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .burger-toggle {
+        display: block;
+    }
+
+    nav:not(.mobile-nav) {
+        display: none;
+    }
+
+    .mobile-nav a {
+        margin: 8px 0;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    .switchers {
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .desktop-nav {
+        display: none;
     }
 }
